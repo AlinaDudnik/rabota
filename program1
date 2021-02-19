@@ -1,65 +1,68 @@
 module date
-real x
+contains
+    subroutine newton(a,b,eps,m)        
+        implicit none
+        real, intent(in)        :: eps, a, b
+        integer, intent(inout)  :: m
+        real                    :: xn,xn1,Prxn,Fxn,fxn1,dx,fl,fr,xl,xr,xn0,prl,prr,x
+        integer                 :: i,j,n1,k,k2,n
+
+        n= 50
+        n1 = n+1
+        dx=(b-a)/n
+        xl = a
+        prl = pr(xl)
+        fl=fx(xl)
+        xr=xl
+        k = 0
+        do j=1,n1 ! ищем интервал смены знака функции
+            xr = xr + dx
+            fr = fx (xr)
+            if (fl*fr < 0.0) then
+                xn= xr ! начальное приближение
+                do i =1,m   ! ищем корень уравнения на интервале xl,xr
+                    Fxn = fx(xn)
+                    Prxn = pr(xn)
+                    xn1 = xn-Fxn/Prxn
+                    fxn1 = fx(xn1)
+                    if (abs(Fxn1-Fxn)<eps.and.abs(xn1-xn)<eps) exit
+                    xn = xn1
+                end do
+                if(i==m+1) then
+                    write(*,*) 'Sdelano', m, 'shagov, poluchen koren=',xn1,', znacheniye f=',fxn1  
+                else
+                    write(*,*) 'Koren uravneniya =',xn1, ', znacheniye f=' ,fxn1               
+                end if
+                xl = xr
+                xr = xl
+                fl = fr
+            end if     
+        end do
+    end subroutine
+  
+  real function Fx(x)
+        implicit none
+        real, intent(in) :: x
+        Fx = (x-1)**2-exp(-x)
+    end function
+    real function Pr(x)
+        implicit none
+        real, intent(in) :: x    
+        Pr = 2*x-2+exp(-x)
+    end function
 end module
 
-program nyuton
+program uravnenie
     use date
     implicit none
-    real eps,xn,xn1,Prxn,Fxn,fxn1,a,b,Fx,Pr,dx,fl,fr,xl,xr,xn0,prl,prr
-    integer i,j,m,n1,k,k2,n
+    real            :: eps,a,b
+    integer         :: m
 
-    write(*,*) 'zadannoe yravnenie (x-1)**2-e**(-x)=0'
+    write(*,*) 'zadannoe uravnenie (x-1)**2-e**(-x)=0'
     write(*,*) 'zadayte interval poiska korney'
     read(*,*) a,b
-    eps=1e-6
-    n= 50
-    n1 = n+1
-    dx=(b-a)/n
-    xl = a
-    x=xl
-    prl = pr()
-    fl=fx()
-    !write (*,*) prl, fl
-    xr=xl
+    eps=1e-8
     m=1000
-    k = 0
-    do j=1,n1 ! ищем интервал смены знака функции
-        xr = xr + dx
-        x=xr
-        fr = fx ()
-        if (fl*fr < 0.0) then
-            xn= xr ! начальное приближение
-            do i =1,m   ! ищем корень уравнения на интервале xl,xr
-                x=xn
-                Fxn = fx()
-                Prxn = pr()
-                xn1 = xn-Fxn/Prxn
-                x=xn1
-                fxn1 = fx()
-                if (abs(Fxn1)<eps) exit
-                xn = xn1
-            end do
-            if(i==m+1) then
-                write(*,*) 'Sdelano 1000 shagov, poluchen koren',xn1    !,fxn1,xl,fl,xr,fr,xn0
-            else
-                    write(*,*) 'Koren yravneniya',xn1   !,fxn1,i,xl,fl,xr,fr,xn0
-            end if
-            xl = xr
-            xr = xl
-            fl = fr
-        end if     
-    end do
+    call newton(a,b,eps,m)
 end program
 
-real function Fx()
-use date
-implicit none
-Fx = (x-1)**2-exp(-x)
-end function
-
-
-real function Pr()
-use date
-implicit none
-Pr = 2*x-2+exp(-x)
-end function
