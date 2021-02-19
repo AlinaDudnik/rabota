@@ -1,0 +1,65 @@
+module date
+real x
+end module
+
+program nyuton
+    use date
+    implicit none
+    real eps,xn,xn1,Prxn,Fxn,fxn1,a,b,Fx,Pr,dx,fl,fr,xl,xr,xn0,prl,prr
+    integer i,j,m,n1,k,k2,n
+
+    write(*,*) 'zadannoe yravnenie (x-1)**2-e**(-x)=0'
+    write(*,*) 'zadayte interval poiska korney'
+    read(*,*) a,b
+    eps=1e-6
+    n= 50
+    n1 = n+1
+    dx=(b-a)/n
+    xl = a
+    x=xl
+    prl = pr()
+    fl=fx()
+    !write (*,*) prl, fl
+    xr=xl
+    m=1000
+    k = 0
+    do j=1,n1 ! ищем интервал смены знака функции
+        xr = xr + dx
+        x=xr
+        fr = fx ()
+        if (fl*fr < 0.0) then
+            xn= xr ! начальное приближение
+            do i =1,m   ! ищем корень уравнения на интервале xl,xr
+                x=xn
+                Fxn = fx()
+                Prxn = pr()
+                xn1 = xn-Fxn/Prxn
+                x=xn1
+                fxn1 = fx()
+                if (abs(Fxn1)<eps) exit
+                xn = xn1
+            end do
+            if(i==m+1) then
+                write(*,*) 'Sdelano 1000 shagov, poluchen koren',xn1    !,fxn1,xl,fl,xr,fr,xn0
+            else
+                    write(*,*) 'Koren yravneniya',xn1   !,fxn1,i,xl,fl,xr,fr,xn0
+            end if
+            xl = xr
+            xr = xl
+            fl = fr
+        end if     
+    end do
+end program
+
+real function Fx()
+use date
+implicit none
+Fx = (x-1)**2-exp(-x)
+end function
+
+
+real function Pr()
+use date
+implicit none
+Pr = 2*x-2+exp(-x)
+end function
