@@ -1,14 +1,96 @@
-module coef
-    real rab3(3,3)
-    real rab4(4,4)
-    real rab5(5,5)
+module date
+    CONTAINS
+    SUBROUTINE kramer(a, b, delta)
+        implicit none
+        real, intent(in):: a(5,5), b(5), delta
+        real            :: rab5(5,5)
+        real            :: di, xi
+        integer         :: i, j, k
+        k = 5
+        do i=1,k
+            rab5=a
+            do j=1,k
+                rab5(j,i)=b(j)
+            end do
+            di = a55(rab5)
+            xi=di/delta
+            write(*,*) xi
+        end do
+    end subroutine
+    !------------------------------------------------------------------
+    real function a33(rab3)
+        implicit none
+        real, intent(in)    :: rab3(3,3)
+        a33 = rab3(1,1)*(rab3(2,2)*rab3(3,3)-rab3(2,3)*rab3(3,2))-  &
+        rab3(1,2)*(rab3(2,1)*rab3(3,3)-rab3(2,3)*rab3(3,1))+        &
+        rab3(1,3)*(rab3(2,1)*rab3(3,2)-rab3(2,2)*rab3(3,1))
+    end function
+    !---------------------------------------------------------------------
+    real function a44(rab4)
+        implicit none
+        real, intent(in)    :: rab4(4,4)
+        real                :: rab3(3,3)
+        real                :: m1, m11,m12,m13,m14
+
+        rab3(1:3,1:3)=rab4(2:4,2:4)
+        m1 = a33(rab3)
+        m11 = rab4(1,1)*m1
+
+        rab3(1:3,1:1)=rab4(2:4,1:1)
+        rab3(1:3,2:3)=rab4(2:4,3:4)
+        m1 = a33(rab3)
+        m12 = -rab4(1,2)*m1
+
+        rab3(1:3,1:2)=rab4(2:4,1:2)
+        rab3(1:3,3:3)=rab4(2:4,4:4)
+        m1 = a33(rab3)
+        m13 = rab4(1,3)*m1
+
+        rab3(1:3,1:3)=rab4(2:4,1:3)
+        m1 = a33(rab3)
+        m14 = -rab4(1,4)*m1
+        a44 = m11+m12+m13+m14
+    end function
+    !------------------------------------------------
+    real function a55(rab5)
+        implicit none
+        real,intent(in)     :: rab5(5,5)
+        real                :: rab4(4,4)
+        real                :: m1, m11,m12,m13,m14,m15
+
+        rab4(1:4,1:4)=rab5(2:5,2:5)
+        m1 = a44(rab4)
+        m11 = rab5(1,1)*m1
+
+        rab4(1:4,1:1)=rab5(2:5,1:1)
+        rab4(1:4,2:4)=rab5(2:5,3:5)
+        m1 = a44(rab4)
+        m12 = -rab5(1,2)*m1
+
+        rab4(1:4,1:2)=rab5(2:5,1:2)
+        rab4(1:4,3:4)=rab5(2:5,4:5)
+        m1 = a44(rab4)
+        m13 = rab5(1,3)*m1
+
+        rab4(1:4,1:3)=rab5(2:5,1:3)
+        rab4(1:4,4:4)=rab5(2:5,5:5)
+        m1 = a44(rab4)
+        m14 = -rab5(1,4)*m1
+
+        rab4(1:4,1:4)=rab5(2:5,1:4)
+        m1 = a44(rab4)
+        m15 = rab5(1,5)*m1
+
+        a55 = m11+m12+m13+m14+m15
+    end function
+    
 end module
 
-program kramer
-    use coef
+program SLAU
+    use date
     implicit none
-    integer i,j
-    real xi,b(5),di,rab(5,5),a55,a44,aa(4,4),a(5,5),delta
+    integer     :: i
+    real        :: b(5),a(5,5),delta
     
     write(*,*) 'vvedite matrix 5*5'
     do i=1,5
@@ -20,91 +102,15 @@ program kramer
         read(*,*) b(i)
     end do
 
-    rab5=a
-    delta=a55()
+    delta=a55(a)
     write (*,*) 'delta=',delta
 
     if (delta==0) THEN
         write(*,*) 'Uravnenie nelzya reshit metodom kramera' 
-    ELSE
-        write(*,*) 'korni ='
-        do i=1,5
-            rab5=a
-            do j=1,5
-                rab5(j,i)=b(j)
-            end do
-            di = a55()
-            xi=di/delta
-            write(*,*) xi
-        end do
+        return
     endif
+    
+    write(*,*) 'korni ='
+    call kramer(a, b, delta)
+    
 end program
-
-!------------------------------------------------------------------
-real function a33()
-    use coef, only : rab3
-    implicit none
-    a33 = rab3(1,1)*(rab3(2,2)*rab3(3,3)-rab3(2,3)*rab3(3,2))-&
-    rab3(1,2)*(rab3(2,1)*rab3(3,3)-rab3(2,3)*rab3(3,1))+&
-    rab3(1,3)*(rab3(2,1)*rab3(3,2)-rab3(2,2)*rab3(3,1))
-end function
-!---------------------------------------------------------------------
-real function a44()
-    use coef, only : rab3,rab4
-    implicit none
-    real m1, m11,m12,m13,m14,a33
-
-    rab3(1:3,1:3)=rab4(2:4,2:4)
-    m1 = a33()
-    m11 = rab4(1,1)*m1
-
-    rab3(1:3,1:1)=rab4(2:4,1:1)
-    rab3(1:3,2:3)=rab4(2:4,3:4)
-    m1 = a33()
-    m12 = -rab4(1,2)*m1
-
-    rab3(1:3,1:2)=rab4(2:4,1:2)
-    rab3(1:3,3:3)=rab4(2:4,4:4)
-    m1 = a33()
-    m13 = rab4(1,3)*m1
-
-    rab3(1:3,1:3)=rab4(2:4,1:3)
-    m1 = a33()
-    m14 = -rab4(1,4)*m1
-
-    a44 = m11+m12+m13+m14
-end function
-!------------------------------------------------
-real function a55()
-    use coef, only : rab4, rab5
-    implicit none
-    real m1, m11,m12,m13,m14,m15,a44
-
-    rab4(1:4,1:4)=rab5(2:5,2:5)
-    m1 = a44()
-    m11 = rab5(1,1)*m1
-    !write(*,*) 'm1=',m1
-
-    rab4(1:4,1:1)=rab5(2:5,1:1)
-    rab4(1:4,2:4)=rab5(2:5,3:5)
-    m1 = a44()
-    m12 = -rab5(1,2)*m1
-    !write(*,*) 'm1=',m1
-
-    rab4(1:4,1:2)=rab5(2:5,1:2)
-    rab4(1:4,3:4)=rab5(2:5,4:5)
-    m1 = a44()
-    m13 = rab5(1,3)*m1
-
-    rab4(1:4,1:3)=rab5(2:5,1:3)
-    rab4(1:4,4:4)=rab5(2:5,5:5)
-    m1 = a44()
-    m14 = -rab5(1,4)*m1
-    !write(*,*) 'm1=',m1
-
-    rab4(1:4,1:4)=rab5(2:5,1:4)
-    m1 = a44()
-    m15 = rab5(1,5)*m1
-
-    a55 = m11+m12+m13+m14+m15
-end function
