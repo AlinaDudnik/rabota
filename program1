@@ -1,15 +1,34 @@
 module date
+!real,allocatable:: O(:),F(:)
+!integer         :: k
 contains
-    subroutine newton(a,b,eps,m)        
+    subroutine newton(a,b,eps,m,o,f,k)        
         implicit none
         real, intent(in)        :: eps, a, b
         integer, intent(inout)  :: m
-        real                    :: xn,xn1,Prxn,Fxn,fxn1,dx,fl,fr,xl,xr,xn0,prl,prr,x
-        integer                 :: i,j,n1,k,k2,n
+        real,allocatable:: O(:),F(:)
+        integer         :: k        
+        real                    :: xn,xn1,Prxn,Fxn,fxn1,dx,fl,fr,xl,xr,xn0,prl,prr,x,pr,fx
+        integer                 :: i,j,n1,k2,n
 
         n= 50
         n1 = n+1
         dx=(b-a)/n
+        xl = a
+        prl = pr(xl)
+        fl=fx(xl)
+        xr=xl
+        k = 0
+        do j=1,n1 ! ищем количество корней - количество знакомпеременных интервалов
+            xr = xr + dx
+            fr = fx (xr)
+            if (fl*fr < 0.0) k = k + 1
+            xl = xr
+            xr = xl
+            fl = fr
+        end do
+
+        allocate(O(k),F(k))
         xl = a
         prl = pr(xl)
         fl=fx(xl)
@@ -20,6 +39,7 @@ contains
             fr = fx (xr)
             if (fl*fr < 0.0) then
                 xn= xr ! начальное приближение
+                k = k + 1
                 do i =1,m   ! ищем корень уравнения на интервале xl,xr
                     Fxn = fx(xn)
                     Prxn = pr(xn)
@@ -28,11 +48,8 @@ contains
                     if (abs(xn1-xn)<eps) exit
                     xn = xn1
                 end do
-                if(i==m+1) then
-                    write(*,*) 'Sdelano', m, 'shagov, poluchen koren=',xn1,', znacheniye f=',fxn1  
-                else
-                    write(*,*) 'Koren uravneniya =',xn1, ', znacheniye f=' ,fxn1               
-                end if
+                O(k)=xn1
+                F(k)=fxn1
                 xl = xr
                 xr = xl
                 fl = fr
@@ -40,29 +57,35 @@ contains
         end do
     end subroutine
   
-  real function Fx(x)
-        implicit none
-        real, intent(in) :: x
-        Fx = (x-1)**2-exp(-x)
-    end function
-    real function Pr(x)
-        implicit none
-        real, intent(in) :: x    
-        Pr = 2*x-2+exp(-x)
-    end function
+  
 end module
 
 program uravnenie
     use date
     implicit none
     real            :: eps,a,b
-    integer         :: m
+    integer         :: m,i
+    real,allocatable:: O(:),F(:)
+    integer         :: k
 
-    write(*,*) 'zadannoe uravnenie (x-1)**2-e**(-x)=0'
+    write(*,*) 'zadannoe uravnenie: (x-1)**2-e**(-x)=0'
     write(*,*) 'zadayte interval poiska korney'
     read(*,*) a,b
     eps=1e-8
     m=1000
-    call newton(a,b,eps,m)
+    call newton(a,b,eps,m,o,f,k) 
+    write(*,*) 'Korni             ',(O(i), i = 1, k)
+    write(*,*) 'znachenie function',(F(i), i = 1, k)
+    
 end program
 
+real function Fx(x)
+        implicit none
+        real :: x
+        Fx = (x-1)**2-exp(-x)
+end function
+real function Pr(x)
+        implicit none
+        real :: x    
+        Pr = 2*x-2+exp(-x)
+end function
