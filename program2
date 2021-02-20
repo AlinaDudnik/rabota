@@ -1,8 +1,9 @@
 module date
     CONTAINS
-    SUBROUTINE kramer(a, b, delta)
+    SUBROUTINE kramer(a, b, delta, o)
         implicit none
         real, intent(in):: a(5,5), b(5), delta
+        real, intent(out)::O(5)
         real            :: rab5(5,5)
         real            :: di, xi
         integer         :: i, j, k
@@ -14,8 +15,10 @@ module date
             end do
             di = a55(rab5)
             xi=di/delta
-            write(*,*) xi
+            O(i)=xi
         end do
+        
+        
     end subroutine
     !------------------------------------------------------------------
     real function a33(rab3)
@@ -90,7 +93,7 @@ program SLAU
     use date
     implicit none
     integer     :: i
-    real        :: b(5),a(5,5),delta
+    real        :: b(5),a(5,5),delta, O(5)
     
     write(*,*) 'vvedite matrix 5*5'
     do i=1,5
@@ -111,6 +114,9 @@ program SLAU
     endif
     
     write(*,*) 'korni ='
-    call kramer(a, b, delta)
+    call kramer(a, b, delta,O)
+    do i=1,5 
+       write(*,*) O(i)
+    enddo
     
 end program
