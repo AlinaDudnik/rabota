@@ -25,7 +25,7 @@ contains
                     Prxn = pr(xn)
                     xn1 = xn-Fxn/Prxn
                     fxn1 = fx(xn1)
-                    if (abs(Fxn1-Fxn)<eps.and.abs(xn1-xn)<eps) exit
+                    if (abs(xn1-xn)<eps) exit
                     xn = xn1
                 end do
                 if(i==m+1) then
