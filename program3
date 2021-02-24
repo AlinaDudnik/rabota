@@ -38,47 +38,46 @@ program lab9
     integer         i,k_all,k,number,otvet
     real*8          J,j1
     LOGICAL         L(10)           ! .true. - вопрос был уже задан, .false. - еще не задавали
-! заполнить следующие массивы:
-    character*100   question(10)    ! массив с вопросами, 100 - длина строки вопроса
-    integer         otwet_true(10)  ! массив ответов
+    character*200   question(10)    
+    integer         otwet_true(10)  
 
-    l = .false. ! все вопросы еще не заданы
+    l = .false. 
     K=0         ! количество верных ответов
     k_all = 0   ! количество заданных вопросов
     
-    question(1) = 'вопрос 1'
-    question(2) = 'вопрос 2'
-    question(3) = 'вопрос 3'
-    question(4) = 'вопрос 4'
-    question(5) = 'вопрос 5'
-    question(6) = 'вопрос 6'
-    question(7) = 'вопрос 7'
-    question(8) = 'вопрос 8'
-    question(9) = 'вопрос 9'
-    question(10)= 'вопрос 10'
+    question(1) = 'вопрос 1: В каком году был образован Советский Союз'
+    question(2) = 'вопрос 2: В каком году был основан Санкт-Петербург'
+    question(3) = 'вопрос 3: В каком году произошло Крещение Руси'
+    question(4) = 'вопрос 4: В каком году Николай II отрёкся от престола'
+    question(5) = 'вопрос 5: Год отмены крепостного права в России'
+    question(6) = 'вопрос 6: В каком году Россия стала империей'
+    question(7) = 'вопрос 7: Год начала Второй мировой войны'
+    question(8) = 'вопрос 8: Год начала Первой мировой войны'
+    question(9) = 'вопрос 9: Год начала Великой Отечественной войны'
+    question(10)= 'вопрос 10: В каком году перестал существовать Советский Союз'
     
-    otwet_true(1) = 1
-    otwet_true(2) = 2
-    otwet_true(3) = 3
-    otwet_true(4) = 4
-    otwet_true(5) = 5
-    otwet_true(6) = 6
-    otwet_true(7) = 7
-    otwet_true(8) = 8
-    otwet_true(9) = 9
-    otwet_true(10) = 10
+    otwet_true(1) = 1922
+    otwet_true(2) = 1703
+    otwet_true(3) = 988
+    otwet_true(4) = 1917
+    otwet_true(5) = 1861
+    otwet_true(6) = 1721
+    otwet_true(7) = 1939
+    otwet_true(8) = 1914
+    otwet_true(9) = 1941
+    otwet_true(10) = 1991
 
     do i = 1, 20
         !j1 = random_no(i)
         J1 = random_rekkur(i)
-        !nint - встроенная функция округление
+        !nint - округление
         number = nint(j1*10)   
-        if (l(number))  CYCLE   ! вопрос уже был задан, рассчитываем следующее случайное число
+        if (l(number))  CYCLE   
         write(*,*) question(number)
         read(*,*)  otvet
         if (otvet == otwet_true(number)) k = k + 1
         k_all = k_all + 1
-        l(number) = .true.  ! занесли признак, что вопрос№number задали
+        l(number) = .true.  
         if (k_all == 10)    exit
     end do
 
