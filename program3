@@ -1,0 +1,98 @@
+MODULE DATE
+    implicit none
+    real :: pi = 3.14
+    CONTAINS
+    
+    recursive real*8 function random_rekkur(k) result(krandom)
+        integer,intent(in) :: k
+        select case(k)
+        case(0)
+            Krandom=(pi-2)**3
+            Krandom = mod(Krandom,1.0)
+        case(1:)
+            Krandom=(pi-2+random_rekkur(k-1))**3
+            Krandom = mod(Krandom,1.0)
+        case default
+            Krandom=-1
+        end select
+        !write (*,*)Krandom
+    end function random_rekkur
+
+    real*8 function random_no (k)
+        integer,intent(in) :: k
+        integer :: i
+        if (k<0) random_no = -1
+        random_no = (pi-2)**3
+        random_no = mod(random_no,1.0)
+        do i =1, K
+            random_no = (random_no + pi-2)**3
+            random_no = mod(random_no,1.0)
+            !write(*,*) random_no
+        end do
+    end function
+END MODULE
+
+program lab9
+    USE DATE
+    implicit none
+    integer         i,k_all,k,number,otvet
+    real*8          J,j1
+    LOGICAL         L(10)           ! .true. - вопрос был уже задан, .false. - еще не задавали
+! заполнить следующие массивы:
+    character*100   question(10)    ! массив с вопросами, 100 - длина строки вопроса. если не хватает, увеличь
+    integer         otwet_true(10)  ! массив ответов
+
+    l = .false. ! все вопросы еще не заданы
+    K=0         ! количество верных ответов
+    k_all = 0   ! количество заданных вопросов
+    
+    question(1) = 'вопрос 1'
+    question(2) = 'вопрос 2'
+    question(3) = 'вопрос 3'
+    question(4) = 'вопрос 4'
+    question(5) = 'вопрос 5'
+    question(6) = 'вопрос 6'
+    question(7) = 'вопрос 7'
+    question(8) = 'вопрос 8'
+    question(9) = 'вопрос 9'
+    question(10)= 'вопрос 10'
+    
+    otwet_true(1) = 1
+    otwet_true(2) = 2
+    otwet_true(3) = 3
+    otwet_true(4) = 4
+    otwet_true(5) = 5
+    otwet_true(6) = 6
+    otwet_true(7) = 7
+    otwet_true(8) = 8
+    otwet_true(9) = 9
+    otwet_true(10) = 10
+
+    do i = 1, 20
+        !j1 = random_no(i)
+        J1 = random_rekkur(i)
+        !nint - встроенная функция округление
+        number = nint(j1*10)   
+        if (l(number))  CYCLE   ! вопрос уже был задан, рассчитываем следующее случайное число
+        write(*,*) question(number)
+        read(*,*)  otvet
+        if (otvet == otwet_true(number)) k = k + 1
+        k_all = k_all + 1
+        l(number) = .true.  ! занесли признак, что вопрос№number задали
+        if (k_all == 10)    exit
+    end do
+
+write(*,*) 'Количество правильных ответов: ', k
+select case (k)
+case (0:5)
+    write(*,*) 'Ваша оценка: 2'
+case (6:7)
+    write(*,*) 'Ваша оценка: 3'
+case (8:9)
+    write(*,*) 'Ваша оценка: 4'
+case default
+    write(*,*) 'Ваша оценка: 5'
+
+end select
+
+end program lab9
