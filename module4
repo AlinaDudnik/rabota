@@ -1,0 +1,40 @@
+MODULE DATE
+    implicit none
+    CONTAINS
+
+recursive real function lagger(k,n,x) result(polinom)
+        integer,intent(in) :: k, n
+        real, intent(in)   :: x
+
+        select case(n)
+        case(0)
+            polinom = 1
+        case(1)
+            polinom = x-(k+1)
+        case(2:)
+            polinom = (x-k-2*n-3)*lagger(k,n-1,x)-(n-1)*(k+n-1)*lagger(k,n-2,x)
+        case default
+            polinom =-1
+        end select
+        
+end function lagger
+
+real function Lg(k,n,x)
+integer,intent(in) :: k, n
+real, intent(in)   :: x
+integer :: i
+real :: lg1, lg2
+
+lg2=1 
+lg1=x-(k+1)
+
+if (n==0) lg=lg2 
+if (n==1) lg=lg1
+
+do  i=2,n 
+    Lg=(x-k-2*i-3)*lg1-(i-1)*(k+i-1)*lg2
+    lg2=lg1
+    lg1=lg
+end do
+end function
+end MODULE
