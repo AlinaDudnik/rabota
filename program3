@@ -1,42 +1,8 @@
-MODULE DATE
-    implicit none
-    real :: pi = 3.14
-    CONTAINS
-    
-    recursive real*8 function random_rekkur(k) result(krandom)
-        integer,intent(in) :: k
-        select case(k)
-        case(0)
-            Krandom=(pi-2)**3
-            Krandom = mod(Krandom,1.0)
-        case(1:)
-            Krandom=(pi-2+random_rekkur(k-1))**3
-            Krandom = mod(Krandom,1.0)
-        case default
-            Krandom=-1
-        end select
-        !write (*,*)Krandom
-    end function random_rekkur
-
-    real*8 function random_no (k)
-        integer,intent(in) :: k
-        integer :: i
-        if (k<0) random_no = -1
-        random_no = (pi-2)**3
-        random_no = mod(random_no,1.0)
-        do i =1, K
-            random_no = (random_no + pi-2)**3
-            random_no = mod(random_no,1.0)
-            !write(*,*) random_no
-        end do
-    end function
-END MODULE
-
-program lab9
+program lab3
     USE DATE
     implicit none
     integer         i,k_all,k,number,otvet
-    real*8          J,j1
+    real*8          J,j1,p,j2
     LOGICAL         L(10)           ! .true. - вопрос был уже задан, .false. - еще не задавали
     character*200   question(10)    
     integer         otwet_true(10)  
@@ -66,13 +32,16 @@ program lab9
     otwet_true(8) = 1914
     otwet_true(9) = 1941
     otwet_true(10) = 1991
-
+    
+    p=p0
     do i = 1, 20
-        !j1 = random_no(i)
-        J1 = random_rekkur(i)
+        j1 = random_no_n(i,p)
+        p=j1
+        J2 = random_rekkur(i)
         !nint - округление
         number = nint(j1*10)   
-        if (l(number))  CYCLE   
+        if (l(number))  CYCLE 
+        write(*,*) j1,j2
         write(*,*) question(number)
         read(*,*)  otvet
         if (otvet == otwet_true(number)) k = k + 1
@@ -94,4 +63,4 @@ case default
 
 end select
 
-end program lab9
+end program lab3
