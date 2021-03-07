@@ -1,0 +1,23 @@
+program lab4
+use DATE
+implicit none
+integer :: k, n
+real    :: x, Ln, Ln_do
+
+write(*,*)'Введите к'
+read(*,*) k
+
+write(*,*)'Введите n'
+read(*,*) n
+
+write(*,*)'Введите x'
+read(*,*) x
+
+Ln=lagger(k,n,x)
+Ln_do= Lg(k,n,x)
+
+write(*,*)'Значение полинома Лаггера ', Ln, Ln_do
+
+
+
+end program
